@@ -92,17 +92,23 @@ function onElemClick(e) {
 
   if (e.target.nodeName === "IMG") {
     const url = e.target.dataset.source;
-    const instance = basicLightbox.create(`
+    const instance = basicLightbox.create(
+      `
     <img src="${url}" width="1112" height="640">
-`);
-    instance.show();
-    const closeHandler = (event) => {
-      if (event.code === "Escape") {
-        instance.close();
-        document.removeEventListener("keydown", closeHandler);
+`,
+      {
+        onShow: (instance) => {
+          document.addEventListener("keydown", onButtonClose);
+        },
+        onClose: (instance) => {
+          document.removeEventListener("keydown", onButtonClose);
+        },
       }
-    };
+    );
+    instance.show();
 
-    document.addEventListener("keydown", closeHandler);
+    function onButtonClose(e) {
+      if (e.key === "Escape") instance.close();
+    }
   }
 }
